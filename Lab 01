@@ -134,7 +134,7 @@ import java.util.Scanner;
 
 public class DiceGame 
 {
-	int numDiceThrows; //synonymous to number of Dices
+	int numDiceThrows;
 	int numCards;
 	RandNumHistory[] arr;
 	Scanner in = new Scanner(System.in);
