@@ -1,0 +1,267 @@
+public interface RandNumHistory 
+{
+	void generateRandomNumber();
+	void keepTrackHistory();
+	void printHistory();
+}
+
+public class Dice implements RandNumHistory
+{
+	private final int HISTORY_SIZE = 10;
+	private int [] history = new int[HISTORY_SIZE];
+	private int myCurrentValue;
+//	private int numThrows;
+ 
+	public Dice()
+	{
+		myCurrentValue = 0;
+
+		for(int i =0 ;i < HISTORY_SIZE; i++)
+			history[i]=0;
+ 
+	}
+	@Override
+	public void generateRandomNumber()
+	{
+		myCurrentValue = (1 + (int)((Math.random()) * 6));
+		keepTrackHistory();
+	}
+ 
+	@Override
+ 	public void keepTrackHistory()
+	{
+		for(int i = 0; i<HISTORY_SIZE; i++)
+		{
+			if(history[i]==0)
+			{
+				history[i] = myCurrentValue;
+				break;
+			}
+		}
+	}
+ 
+	public void printHistory()
+	{
+		for(int i=0 ; i< HISTORY_SIZE; i++)
+		{
+			if(history[i]==0)
+				break;
+			System.out.print(history[i] + " ");
+		}
+		System.out.println();
+	}
+	
+}
+
+public class Card implements RandNumHistory
+{
+	private int [] history;
+	private int myNumCards;
+	private int myCurrentCard;
+  
+	public Card(int cards)
+	{
+		myCurrentCard = 0;
+  
+		if(cards>0 && cards<4)
+		{
+			myNumCards = cards;
+			history = new int[myNumCards];
+		}
+		else
+		{
+			myNumCards = 0;
+			history = new int[0];
+		}
+  
+		for(int i =0 ;i < myNumCards; i++)
+			history[i]=0;
+	}
+ 
+	@Override
+	public void generateRandomNumber()
+	{
+		int total = 0;
+		for(int i = 0; i<myNumCards; i++)
+			total += (1 + (int)((Math.random()) * 10));
+		//System.out.println("Total: " + total);
+		myCurrentCard = total;
+		keepTrackHistory();
+	}
+ 
+	@Override
+	public void keepTrackHistory()
+	{
+		for(int i = 0; i<myNumCards; i++)
+		{
+			if(history[i]==0)
+			{
+				history[i] = myCurrentCard;
+				break;
+			}
+		}
+	}
+ 
+	public void printHistory()
+	{
+		for(int i=0 ; i< myNumCards; i++)
+		{
+			if(history[i]==0)
+				break;
+			System.out.print(history[i] + " ");
+		}
+		System.out.println();
+	}
+	
+}
+
+import java.util.Scanner;
+
+public class main 
+{
+	
+	public static void main(String[]args)
+	{ 
+
+		DiceGame tester = new DiceGame();
+		tester.playGame();
+		
+	}
+}
+
+import java.util.Scanner;
+
+
+public class DiceGame 
+{
+	int numDiceThrows; //synonymous to number of Dices
+	int numCards;
+	RandNumHistory[] arr;
+	Scanner in = new Scanner(System.in);
+	
+	
+	public void playGame()
+	{
+		displayIntroMessage();
+		
+		initializeThrowsAndDealts();
+		storeDiceAndCards();
+		
+		throwDice();
+		dealCards();
+
+		showHistory();
+		
+	}
+	
+	private void displayIntroMessage()
+	{
+		System.out.println("This program will keep track of history of " +
+				"thrown Dice and dealt Cards.");
+	}
+	
+	private void initializeThrowsAndDealts()
+	{
+		initializeNumDiceThrows();
+		initializeNumCardsDealt();
+	}
+	
+	private void initializeNumDiceThrows()
+	{
+		boolean loopAgain = true;
+		do
+		{
+			try
+			{
+				numDiceThrows = getNumDiceThrows();				
+				loopAgain = false;
+			}
+			catch (Exception exception)
+			{
+				System.out.println("Error: " + exception);
+			}
+		}while(loopAgain == true);
+	}
+	
+	private void initializeNumCardsDealt()
+	{
+		boolean loopAgain = true;
+		do
+		{
+			try
+			{
+				numCards = getNumCards();				
+				loopAgain = false;
+			}
+			catch (Exception exception)
+			{
+				System.out.println("Error: " + exception);
+			}
+		}while(loopAgain == true);
+	}
+	
+	
+	private int getNumDiceThrows() 
+		throws Exception
+	{
+		in = new Scanner(System.in);
+		System.out.print("Enter the number of throws of the dice: ");
+		int numThrows = in.nextInt();
+		if(numThrows > 3)
+			throw new Exception("Too many throws.");
+		return numThrows;
+	}	
+	
+	private int getNumCards()
+		throws Exception
+	{
+		in = new Scanner(System.in);
+		System.out.print("Enter the number of cards to be dealt: ");
+		int tempNumCards = in.nextInt();
+		if(tempNumCards <= 0)
+			throw new Exception("Please enter a positive value.");
+		return tempNumCards;
+	}
+	
+	private void storeDiceAndCards()
+	{
+		arr = new RandNumHistory[2];
+		arr[0] = new Dice();
+		arr[1] = new Card(numCards);
+	}
+	
+	private void throwDice()
+	{
+		for(int i = 0; i<numDiceThrows; i++)
+		{
+			arr[0].generateRandomNumber();
+		}
+	}
+	
+	private void dealCards()
+	{
+		for(int i = 0; i<numCards; i++)
+		{
+			arr[1].generateRandomNumber();
+		}	
+	}
+	
+	private void showHistory()
+	{
+		System.out.println("The history for a dice thrown " + numDiceThrows + " times "
+				+ "and the history of the sum of " + numCards 
+					+ " cards are: \n");
+
+		for(RandNumHistory obj : arr)
+		{
+			if(obj instanceof Dice)
+				System.out.print("The history of the dice is: ");
+			else
+				System.out.print("The history of the cards is: ");
+			obj.printHistory();
+		}
+	}
+	
+	
+
+}
